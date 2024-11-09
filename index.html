@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MapLibre GL JSでベクタータイルを使う</title>
+        <!-- MapLibre GL JSを読み込み -->
+        <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+        <link
+            href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div id="map" style="height: 80vh"></div>
+        <script>
+            // MapLibreインスタンスを初期化
+            const path = location.href.replace('/index.html', '');
+            const admin_url = `${path}/tiles/{z}/{x}/{y}.pbf`;
+            const rail_url = `${path}/rail_tiles/{z}/{x}/{y}.pbf`;
+            const map = new maplibregl.Map({
+                container: 'map',
+                center: [137.1, 36.5],
+                zoom: 4,
+                style: {
+                    // MapLibre-Style
+                    version: 8,
+                    sources: {
+                        // 地図上で使うデータを定義する
+                        osm: {
+                            type: 'raster', // ラスタータイル
+                            tiles: [
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            ],
+                            tileSize: 256, // タイルの解像度, デフォルトは512
+                            attribution:
+                                '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        },
+                        /*
+                        admin: {
+                            type: 'vector', // ベクトルタイル
+                            tiles: [admin_url],
+                            maxzoom: 8,
+                            attribution:
+                                '<a href="https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_1.html">国土数値情報 - 行政区域データ</a>',
+                        },
+                        */
+                        rail: {
+                            type: 'vector', // ベクトルタイル
+                            tiles: [rail_url],
+                            maxzoom: 8,
+                            attribution:
+                                '<a href="https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_1.html">国土数値情報 - 行政区域データ</a>',
+                        },
+                    },
+                    layers: [
+                        {
+                            id: 'osm-layer',
+                            source: 'osm', // 使うデータをsourcesのkeyで指定する
+                            type: 'raster', // データをどのように表示するか指定する
+                        },
+                        /*
+                        {
+                            id: 'admin-layer',
+                            source: 'admin',
+                            'source-layer': 'admin', // ベクトルタイル内のレイヤー名を指定する
+                            type: 'fill',
+                            paint: {
+                                'fill-color': '#fa0',
+                                'fill-opacity': 0.5,
+                                'fill-outline-color': '#00f',
+                            },
+                        },
+                        */
+                        {
+                            id: 'rail-layer',
+                            type: 'line',
+                            source: 'rail',
+                            'source-layer': 'rail', // ベクトルタイル内のレイヤー名を指定する
+                            paint: {
+                                'line-color': 'black', 
+                                'line-width': 2.0,
+                                'line-opacity': 0.75,
+                            },
+                            layout: {
+                                'line-cap': 'round',
+                            },
+                        },
+                    ],
+                },
+            });
+        </script>
+    </body>
+</html>
